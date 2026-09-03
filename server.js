@@ -1,10 +1,24 @@
 const express = require('express');
 const db= require('./db');
 const app = express();
+app.use(express.json());
 const PORT = 3000;
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando!');
+});
+
+app.get('/produtos', (req, res) => {
+  const produtos = db.prepare('SELECT * FROM produtos').all();
+  res.json(produtos);
+});
+
+app.post('/produtos', (req, res) => {
+  const { nome, quantidade, preco } = req.body;
+  const resultado = db.prepare(
+    'INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)'
+  ).run(nome, quantidade, preco);
+  res.json({ id: resultado.lastInsertRowid, nome, quantidade, preco });
 });
 
 app.listen(PORT, () => {
