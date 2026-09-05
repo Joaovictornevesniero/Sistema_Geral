@@ -21,6 +21,21 @@ app.post('/produtos', (req, res) => {
   res.json({ id: resultado.lastInsertRowid, nome, quantidade, preco });
 });
 
+app.put('/produtos/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, quantidade, preco } = req.body;
+  db.prepare(
+    'UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?'
+  ).run(nome, quantidade, preco, id);
+  res.json({ id: Number(id), nome, quantidade, preco });
+});
+
+app.delete('/produtos/:id', (req, res) => {
+  const { id } = req.params;
+  db.prepare('DELETE FROM produtos WHERE id = ?').run(id);
+  res.json({ mensagem: 'Produto removido com sucesso' });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
