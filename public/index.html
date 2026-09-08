@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estoque</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <h1>Sistema de Estoque</h1>
+
+    <h2>Cadastrar Produto</h2>
+    <form id="form-produto">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required>
+
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" required>
+
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" step="0.01" required>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <h2>Produtos em Estoque</h2>
+    <table id="tabela-produtos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Produtos vão aparecer aqui via JavaScript -->
+        </tbody>
+    </table>
+
+</body>
+</html>
