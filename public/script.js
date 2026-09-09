@@ -19,3 +19,23 @@ async function carregarProdutos() {
 }
 
 carregarProdutos();
+
+const form = document.querySelector('#form-produto');
+
+form.addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+
+  const nome = document.querySelector('#nome').value;
+  const quantidade = document.querySelector('#quantidade').value;
+  const preco = document.querySelector('#preco').value;
+
+  await fetch('/produtos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome, quantidade, preco })
+  });
+
+  form.reset();
+  carregarProdutos();
+});
+    
