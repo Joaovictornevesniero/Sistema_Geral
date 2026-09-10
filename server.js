@@ -14,6 +14,12 @@ app.get('/produtos', (req, res) => {
   res.json(produtos);
 });
 
+app.get('/produtos/:id', (req, res) => {
+  const { id } = req.params;
+  const produto = db.prepare('SELECT * FROM produtos WHERE id = ?').get(id);
+  res.json(produto);
+});
+
 app.post('/produtos', (req, res) => {
   const { nome, quantidade, preco } = req.body;
   const resultado = db.prepare(
