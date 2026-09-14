@@ -1,3 +1,4 @@
+// Busca os produtos no banco e desenha a tabela na tela
 async function carregarProdutos() {
   const resposta = await fetch('/produtos');
   const produtos = await resposta.json();
@@ -25,6 +26,7 @@ carregarProdutos();
 
 const form = document.querySelector('#form-produto');
 
+// Cadastra ou atualiza um produto, dependendo se está em modo edição
 form.addEventListener('submit', async (evento) => {
   evento.preventDefault();
 
@@ -54,12 +56,17 @@ form.addEventListener('submit', async (evento) => {
 
 const tbody = document.querySelector('#tabela-produtos tbody');
 
+// Listener no tbody (não em cada botão) porque as linhas são recriadas
+// toda vez que a tabela é atualizada,  botões individuais perderiam o listener
 tbody.addEventListener('click', async (evento) => {
+  // Exclui o produto da linha clicada
   if (evento.target.classList.contains('btn-excluir')) {
     const id = evento.target.dataset.id;
     await fetch(`/produtos/${id}`, { method: 'DELETE' });
     carregarProdutos();
   }
+
+    // Preenche o formulário com os dados do produto pra edição
   if (evento.target.classList.contains('btn-editar')) {
     const id = evento.target.dataset.id;
     const resposta = await fetch(`/produtos/${id}`);
@@ -68,7 +75,7 @@ tbody.addEventListener('click', async (evento) => {
     document.querySelector('#nome').value = produto.nome;
     document.querySelector('#quantidade').value = produto.quantidade;
     document.querySelector('#preco').value = produto.preco;
-
+    // Marca o formulário como "em edição", o submit usa isso pra decidir PUT ou POST
     form.dataset.editandoId = id;
   }
 });
