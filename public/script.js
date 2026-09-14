@@ -35,21 +35,29 @@ form.addEventListener('submit', async (evento) => {
   const preco = document.querySelector('#preco').value;
   const editandoId = form.dataset.editandoId;
 
+  let resposta;
+
   if (editandoId) {
-    await fetch(`/produtos/${editandoId}`, {
+    resposta = await fetch(`/produtos/${editandoId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, quantidade, preco })
     });
-    delete form.dataset.editandoId;
   } else {
-    await fetch('/produtos', {
+    resposta = await fetch('/produtos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, quantidade, preco })
     });
   }
 
+  if (!resposta.ok) {
+    const dados = await resposta.json();
+    alert(dados.erro);
+    return;
+  }
+
+  delete form.dataset.editandoId;
   form.reset();
   carregarProdutos();
 });

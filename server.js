@@ -7,6 +7,21 @@ app.use(express.static('public'));
 
 const PORT = 3000;
 
+function validarProduto(dados) {
+  const { nome, quantidade, preco } = dados;
+
+  if (!nome || nome.trim() === '') {
+    return 'Nome é obrigatório';
+  }
+  if (isNaN(quantidade) || Number(quantidade) < 0) {
+    return 'Quantidade deve ser um número maior ou igual a zero';
+  }
+  if (isNaN(preco) || Number(preco) < 0) {
+    return 'Preço deve ser um número maior ou igual a zero';
+  }
+  return null;
+}
+
 // Rota de teste: confirma que o servidor está no ar
 app.get('/', (req, res) => {
   res.send('Servidor funcionando!');
@@ -29,7 +44,10 @@ app.get('/produtos/:id', (req, res) => {
 app.post('/produtos', (req, res) => {
   const { nome, quantidade, preco } = req.body;
 
-  // ? evita SQL Injection - nunca concatenar valor do usuário direto no SQL
+  const erro = validarProduto(req.body);
+  if (erro) {
+    return res.status(400).json({ erro });
+  }
   const resultado = db.prepare(
     'INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)'
   ).run(nome, quantidade, preco);
@@ -40,6 +58,12 @@ app.post('/produtos', (req, res) => {
 app.put('/produtos/:id', (req, res) => {
   const { id } = req.params;
   const { nome, quantidade, preco } = req.body;
+
+  const erro = validarProduto(req.body);
+  if (erro) {
+    return res.status(400).json({ erro });
+  }
+
   db.prepare(
     'UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?'
   ).run(nome, quantidade, preco, id);
