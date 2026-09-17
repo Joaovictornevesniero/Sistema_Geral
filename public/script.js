@@ -6,13 +6,17 @@ async function carregarProdutos() {
   const tbody = document.querySelector('#tabela-produtos tbody');
   tbody.innerHTML = '';
 
+  if (produtos.length === 0) {
+    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="4">Nenhum produto cadastrado ainda. Use o formulário ao lado para adicionar o primeiro.</td></tr>';
+    return;
+  }
+
   produtos.forEach((produto) => {
     const linha = document.createElement('tr');
     linha.innerHTML = `
-      <td>${produto.id}</td>
       <td>${produto.nome}</td>
       <td>${produto.quantidade}</td>
-      <td>${produto.preco}</td>
+      <td>R$ ${Number(produto.preco).toFixed(2)}</td>
       <td>
         <button class="btn-editar" data-id="${produto.id}">Editar</button>
         <button class="btn-excluir" data-id="${produto.id}">Excluir</button>
