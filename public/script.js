@@ -3,6 +3,13 @@ async function carregarProdutos() {
   const resposta = await fetch('/produtos');
   const produtos = await resposta.json();
 
+  // Atualiza os números dos cards de resumo
+  const baixos = produtos.filter((p) => p.quantidade < p.minimo).length;
+  const valorTotal = produtos.reduce((soma, p) => soma + p.quantidade * p.preco, 0);
+  document.querySelector('#total-produtos').textContent = produtos.length;
+  document.querySelector('#total-baixo').textContent = baixos;
+  document.querySelector('#valor-estoque').textContent = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
   const tbody = document.querySelector('#tabela-produtos tbody');
   tbody.innerHTML = '';
 

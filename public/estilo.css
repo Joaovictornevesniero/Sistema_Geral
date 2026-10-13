@@ -51,6 +51,10 @@ body {
   .conteudo {
     grid-template-columns: 1fr;
   }
+
+  .resumo {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cartao {
@@ -186,3 +190,24 @@ tbody tr:hover {
   background: #FBEAE8;
   color: var(--danger);
 }
+
+.resumo {
+  max-width: 1000px;
+  margin: 0 auto 24px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.resumo strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.resumo span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
