@@ -39,7 +39,9 @@ form.addEventListener('submit', async (evento) => {
   evento.preventDefault();
 
   const nome = document.querySelector('#nome').value;
+  const categoria = document.querySelector('#categoria').value;
   const quantidade = document.querySelector('#quantidade').value;
+  const minimo = document.querySelector('#minimo').value;
   const preco = document.querySelector('#preco').value;
   const editandoId = form.dataset.editandoId;
 
@@ -49,13 +51,13 @@ form.addEventListener('submit', async (evento) => {
     resposta = await fetch(`/produtos/${editandoId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, quantidade, preco })
+      body: JSON.stringify({ nome, categoria, quantidade, minimo, preco })
     });
   } else {
     resposta = await fetch('/produtos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, quantidade, preco })
+      body: JSON.stringify({ nome, categoria, quantidade, minimo, preco })
     });
   }
 
@@ -89,7 +91,9 @@ tbody.addEventListener('click', async (evento) => {
     const produto = await resposta.json();
 
     document.querySelector('#nome').value = produto.nome;
+    document.querySelector('#categoria').value = produto.categoria;
     document.querySelector('#quantidade').value = produto.quantidade;
+    document.querySelector('#minimo').value = produto.minimo;
     document.querySelector('#preco').value = produto.preco;
     // Marca o formulário como "em edição", o submit usa isso pra decidir PUT ou POST
     form.dataset.editandoId = id;
