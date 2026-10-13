@@ -8,7 +8,7 @@ app.use(express.static('public'));
 const PORT = 3000;
 
 function validarProduto(dados) {
-  const { nome, quantidade, preco } = dados;
+  const { nome, quantidade, minimo = 0, preco } = dados;
 
   if (!nome || nome.trim() === '') {
     return 'Nome é obrigatório';
@@ -18,6 +18,9 @@ function validarProduto(dados) {
   }
   if (isNaN(preco) || Number(preco) < 0) {
     return 'Preço deve ser um número maior ou igual a zero';
+  }
+    if (isNaN(minimo) || Number(minimo) < 0) {
+    return 'Estoque mínimo deve ser um número maior ou igual a zero';
   }
   return null;
 }
@@ -42,22 +45,24 @@ app.get('/produtos/:id', (req, res) => {
 
 // Cadastra um novo produto
 app.post('/produtos', (req, res) => {
-  const { nome, quantidade, preco } = req.body;
+  const { nome, quantidade, minimo = 0, preco } = req.body;
+  const categoria = req.body.categoria || 'Geral';
 
   const erro = validarProduto(req.body);
   if (erro) {
     return res.status(400).json({ erro });
   }
   const resultado = db.prepare(
-    'INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)'
-  ).run(nome, quantidade, preco);
-  res.json({ id: resultado.lastInsertRowid, nome, quantidade, preco });
+    'INSERT INTO produtos (nome, categoria, quantidade, minimo, preco) VALUES (?, ?, ?, ?, ?)'
+  ).run(nome, categoria, quantidade, minimo, preco);
+  res.json({ id: resultado.lastInsertRowid, nome, categoria, quantidade, minimo, preco });
 });
 
 // Atualiza um produto existente pelo id
 app.put('/produtos/:id', (req, res) => {
   const { id } = req.params;
-  const { nome, quantidade, preco } = req.body;
+  const { nome, quantidade, minimo = 0, preco } = req.body;
+  const categoria = req.body.categoria || 'Geral';
 
   const erro = validarProduto(req.body);
   if (erro) {
@@ -65,9 +70,9 @@ app.put('/produtos/:id', (req, res) => {
   }
 
   db.prepare(
-    'UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?'
-  ).run(nome, quantidade, preco, id);
-  res.json({ id: Number(id), nome, quantidade, preco });
+    'UPDATE produtos SET nome = ?, categoria = ?, quantidade = ?, minimo = ?, preco = ? WHERE id = ?'
+  ).run(nome, categoria, quantidade, minimo, preco, id);
+  res.json({ id: Number(id), nome, categoria, quantidade, minimo, preco });
 });
 
 // Remove um produto pelo id

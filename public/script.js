@@ -7,16 +7,20 @@ async function carregarProdutos() {
   tbody.innerHTML = '';
 
   if (produtos.length === 0) {
-    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="4">Nenhum produto cadastrado ainda. Use o formulário ao lado para adicionar o primeiro.</td></tr>';
+    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="7">Nenhum produto cadastrado ainda. Use o formulário ao lado para adicionar o primeiro.</td></tr>';
     return;
   }
 
   produtos.forEach((produto) => {
+    const baixo = produto.quantidade < produto.minimo;
     const linha = document.createElement('tr');
     linha.innerHTML = `
       <td>${produto.nome}</td>
-      <td>${produto.quantidade}</td>
-      <td>R$ ${Number(produto.preco).toFixed(2)}</td>
+      <td>${produto.categoria}</td>
+      <td>${produto.quantidade} un</td>
+      <td>${produto.minimo}</td>
+      <td>${Number(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+      <td><span class="status ${baixo ? 'baixo' : 'ok'}">${baixo ? 'Estoque baixo' : 'Ok'}</span></td>
       <td>
         <button class="btn-editar" data-id="${produto.id}">Editar</button>
         <button class="btn-excluir" data-id="${produto.id}">Excluir</button>

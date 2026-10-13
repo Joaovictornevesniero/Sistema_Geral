@@ -168,3 +168,21 @@ tbody tr:hover {
   color: var(--text-muted);
   padding: 32px 12px;
 }
+
+.status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.ok {
+  background: #E4EFE8;
+  color: var(--primary);
+}
+
+.status.baixo {
+  background: #FBEAE8;
+  color: var(--danger);
+}
