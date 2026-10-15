@@ -16,14 +16,72 @@
 
 body {
   margin: 0;
+  display: flex;
+  min-height: 100vh;
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
+.menu {
+  width: 210px;
+  flex-shrink: 0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #15181A;
+  padding: 24px 16px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ponto {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.menu a {
+  display: block;
+  padding: 10px 12px;
+  margin-bottom: 2px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #B9BAB4;
+}
+
+.menu a.ativo {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 600;
+}
+
+.menu a.breve {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagina {
+  flex: 1;
+  min-width: 0;
+}
+
 .cabecalho {
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 40px 24px 24px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .cabecalho h1 {
@@ -43,18 +101,8 @@ body {
   margin: 0 auto;
   padding: 0 24px 48px;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
-}
-
-@media (max-width: 720px) {
-  .conteudo {
-    grid-template-columns: 1fr;
-  }
-
-  .resumo {
-    grid-template-columns: 1fr;
-  }
 }
 
 .cartao {
@@ -211,3 +259,78 @@ tbody tr:hover {
   color: var(--text-muted);
 }
 
+.cabecalho .botao-primario {
+  width: auto;
+  padding: 12px 20px;
+  white-space: nowrap;
+}
+
+dialog {
+  width: min(400px, 92vw);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.botao-cancelar {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    padding: 6px;
+    z-index: 5;
+  }
+
+  .marca {
+    display: none;
+  }
+
+  .menu nav {
+    display: flex;
+  }
+
+  .menu a {
+    flex: 1;
+    margin: 0;
+    padding: 12px 4px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .pagina {
+    padding-bottom: 70px;
+  }
+
+  th:nth-child(2), td:nth-child(2),
+  th:nth-child(4), td:nth-child(4) {
+    display: none;
+  }
+}

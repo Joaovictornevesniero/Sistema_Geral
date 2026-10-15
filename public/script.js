@@ -21,7 +21,7 @@ async function carregarProdutos() {
   tbody.innerHTML = '';
 
   if (produtos.length === 0) {
-    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="7">Nenhum produto cadastrado ainda. Use o formulário ao lado para adicionar o primeiro.</td></tr>';
+    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="7">Nenhum produto cadastrado ainda. Clique em "+ Novo produto" para adicionar o primeiro.</td></tr>';
     return;
   }
 
@@ -47,6 +47,19 @@ async function carregarProdutos() {
 carregarProdutos();
 
 const form = document.querySelector('#form-produto');
+const dialogo = document.querySelector('#dialogo');
+
+// Abre a janela vazia, em modo de cadastro
+document.querySelector('#btn-novo').addEventListener('click', () => {
+  delete form.dataset.editandoId;
+  form.reset();
+  document.querySelector('#titulo-dialogo').textContent = 'Novo produto';
+  dialogo.showModal();
+});
+
+document.querySelector('#btn-cancelar').addEventListener('click', () => {
+  dialogo.close();
+});
 
 // Cadastra ou atualiza um produto, dependendo se está em modo edição
 form.addEventListener('submit', async (evento) => {
@@ -83,6 +96,7 @@ form.addEventListener('submit', async (evento) => {
 
   delete form.dataset.editandoId;
   form.reset();
+  dialogo.close();
   carregarProdutos();
 });
 
@@ -111,5 +125,8 @@ tbody.addEventListener('click', async (evento) => {
     document.querySelector('#preco').value = produto.preco;
     // Marca o formulário como "em edição", o submit usa isso pra decidir PUT ou POST
     form.dataset.editandoId = id;
+
+    document.querySelector('#titulo-dialogo').textContent = 'Editar produto';
+    dialogo.showModal();
   }
 });

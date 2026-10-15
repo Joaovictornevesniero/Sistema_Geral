@@ -11,67 +11,85 @@
 </head>
 <body>
 
-    <header class="cabecalho">
-        <h1>Sistema de Estoque</h1>
-        <p class="subtitulo">Cadastre, edite e acompanhe seus produtos em um só lugar.</p>
-    </header>
+    <aside class="menu">
+        <div class="marca"><span class="ponto"></span>Estoque+</div>
+        <nav>
+            <a class="ativo">Produtos</a>
+            <a class="breve">Entradas / saídas</a>
+            <a class="breve">Relatórios</a>
+            <a class="breve">Configurações</a>
+        </nav>
+    </aside>
 
-    <section class="resumo">
-        <div class="cartao"><strong id="total-produtos">0</strong><span>Produtos</span></div>
-        <div class="cartao"><strong id="total-baixo">0</strong><span>Estoque baixo</span></div>
-        <div class="cartao"><strong id="valor-estoque">R$ 0,00</strong><span>Valor em estoque</span></div>
-    </section>
+    <div class="pagina">
 
-    <main class="conteudo">
+        <header class="cabecalho">
+            <div>
+                <h1>Sistema de Estoque</h1>
+                <p class="subtitulo">Cadastre, edite e acompanhe seus produtos em um só lugar.</p>
+            </div>
+            <button id="btn-novo" class="botao-primario">+ Novo produto</button>
+        </header>
 
-        <section class="cartao cartao-formulario">
-            <h2>Novo produto</h2>
-            <form id="form-produto">
-                <div class="campo">
-                    <label for="nome">Nome do produto</label>
-                    <input type="text" id="nome" placeholder="Ex: Caneta azul" required>
-                </div>
-                <div class="campo">
-                    <label for="categoria">Categoria</label>
-                    <input type="text" id="categoria" placeholder="Ex: Peças">
-                </div>
-                <div class="campo">
-                    <label for="quantidade">Quantidade em estoque</label>
-                    <input type="number" id="quantidade" placeholder="0" min="0" required>
-                </div>
-                <div class="campo">
-                    <label for="minimo">Estoque mínimo</label>
-                    <input type="number" id="minimo" placeholder="0" min="0" required>
-                </div>
-                <div class="campo">
-                    <label for="preco">Preço (R$)</label>
-                    <input type="number" id="preco" placeholder="0,00" step="0.01" min="0" required>
-                </div>
-                <button type="submit" class="botao-primario">Cadastrar produto</button>
-            </form>
+        <section class="resumo">
+            <div class="cartao"><strong id="total-produtos">0</strong><span>Produtos</span></div>
+            <div class="cartao"><strong id="total-baixo">0</strong><span>Estoque baixo</span></div>
+            <div class="cartao"><strong id="valor-estoque">R$ 0,00</strong><span>Valor em estoque</span></div>
         </section>
 
-        <section class="cartao cartao-tabela">
-            <h2>Produtos em estoque</h2>
-            <table id="tabela-produtos">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Categoria</th>
-                        <th>Qtd</th>
-                        <th>Mín</th>
-                        <th>Preço</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Produtos vão aparecer aqui via JavaScript -->
-                </tbody>
-            </table>
-        </section>
+        <main class="conteudo">
 
-    </main>
+            <section class="cartao cartao-tabela">
+                <h2>Produtos em estoque</h2>
+                <table id="tabela-produtos">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Qtd</th>
+                            <th>Mín</th>
+                            <th>Preço</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Produtos vão aparecer aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+        </main>
+
+    </div>
+
+    <dialog id="dialogo" class="cartao cartao-formulario">
+        <h2 id="titulo-dialogo">Novo produto</h2>
+        <form id="form-produto">
+            <div class="campo">
+                <label for="nome">Nome do produto</label>
+                <input type="text" id="nome" placeholder="Ex: Caneta azul" required>
+            </div>
+            <div class="campo">
+                <label for="categoria">Categoria</label>
+                <input type="text" id="categoria" placeholder="Ex: Peças">
+            </div>
+            <div class="campo">
+                <label for="quantidade">Quantidade em estoque</label>
+                <input type="number" id="quantidade" placeholder="0" min="0" required>
+            </div>
+            <div class="campo">
+                <label for="minimo">Estoque mínimo</label>
+                <input type="number" id="minimo" placeholder="0" min="0" required>
+            </div>
+            <div class="campo">
+                <label for="preco">Preço (R$)</label>
+                <input type="number" id="preco" placeholder="0,00" step="0.01" min="0" required>
+            </div>
+            <button type="submit" class="botao-primario">Salvar produto</button>
+            <button type="button" id="btn-cancelar" class="botao-cancelar">Cancelar</button>
+        </form>
+    </dialog>
 
     <script src="script.js"></script>
 </body>
