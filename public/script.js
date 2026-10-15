@@ -42,7 +42,21 @@ async function carregarProdutos() {
     `;
     tbody.appendChild(linha);
   });
+  filtrarTabela();
 }
+
+// Esconde as linhas da tabela que não batem com o texto da busca
+function filtrarTabela() {
+  const termo = document.querySelector('#busca').value.toLowerCase();
+
+  document.querySelectorAll('#tabela-produtos tbody tr').forEach((linha) => {
+    if (linha.classList.contains('linha-vazia')) return;
+    const texto = `${linha.cells[0].textContent} ${linha.cells[1].textContent}`.toLowerCase();
+    linha.style.display = texto.includes(termo) ? '' : 'none';
+  });
+}
+
+document.querySelector('#busca').addEventListener('input', filtrarTabela);
 
 carregarProdutos();
 

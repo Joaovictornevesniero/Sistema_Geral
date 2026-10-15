@@ -287,6 +287,23 @@ dialog::backdrop {
   cursor: pointer;
 }
 
+.busca {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+}
+
+.busca:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
 @media (max-width: 720px) {
   .resumo {
     grid-template-columns: 1fr;
