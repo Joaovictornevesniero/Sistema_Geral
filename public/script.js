@@ -1,3 +1,10 @@
+// Evita que caracteres como < e & quebrem a tabela ou injetem código
+function esc(texto) {
+  return String(texto).replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
 // Busca os produtos no banco e desenha a tabela na tela
 async function carregarProdutos() {
   const resposta = await fetch('/produtos');
@@ -22,8 +29,8 @@ async function carregarProdutos() {
     const baixo = produto.quantidade < produto.minimo;
     const linha = document.createElement('tr');
     linha.innerHTML = `
-      <td>${produto.nome}</td>
-      <td>${produto.categoria}</td>
+      <td>${esc(produto.nome)}</td>
+      <td>${esc(produto.categoria)}</td>
       <td>${produto.quantidade} un</td>
       <td>${produto.minimo}</td>
       <td>${Number(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
