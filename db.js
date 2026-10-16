@@ -15,14 +15,18 @@ db.exec(`
   )
 `);
 
-// Adiciona as colunas novas sem apagar os produtos que já existem
-const colunas = db.prepare('PRAGMA table_info(produtos)').all().map((c) => c.name);
-
-if (!colunas.includes('categoria')) {
-  db.exec("ALTER TABLE produtos ADD COLUMN categoria TEXT NOT NULL DEFAULT 'Geral'");
-}
-if (!colunas.includes('minimo')) {
-  db.exec('ALTER TABLE produtos ADD COLUMN minimo INTEGER NOT NULL DEFAULT 0');
-}
+// Cria - a tabela de movimentações (histórico de entradas e saídas)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS movimentacoes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    produto_id INTEGER NOT NULL,
+    tipo TEXT NOT NULL CHECK (tipo IN ('entrada', 'saida')),
+    quantidade INTEGER NOT NULL CHECK (quantidade > 0),
+    origem TEXT NOT NULL DEFAULT 'manual',
+    observacao TEXT,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (produto_id) REFERENCES produtos(id)
+  )
+`);
 
 module.exports = db;

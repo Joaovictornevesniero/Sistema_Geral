@@ -122,7 +122,12 @@ tbody.addEventListener('click', async (evento) => {
   // Exclui o produto da linha clicada
   if (evento.target.classList.contains('btn-excluir')) {
     const id = evento.target.dataset.id;
-    await fetch(`/produtos/${id}`, { method: 'DELETE' });
+    const resposta = await fetch(`/produtos/${id}`, { method: 'DELETE' });
+    if (!resposta.ok) {
+      const dados = await resposta.json();
+      alert(dados.erro);
+      return;
+    }
     carregarProdutos();
   }
 

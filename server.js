@@ -16,11 +16,29 @@ function validarProduto(dados) {
   if (isNaN(quantidade) || Number(quantidade) < 0) {
     return 'Quantidade deve ser um número maior ou igual a zero';
   }
+  if (isNaN(minimo) || Number(minimo) < 0) {
+    return 'Estoque mínimo deve ser um número maior ou igual a zero';
+  }
   if (isNaN(preco) || Number(preco) < 0) {
     return 'Preço deve ser um número maior ou igual a zero';
   }
-    if (isNaN(minimo) || Number(minimo) < 0) {
-    return 'Estoque mínimo deve ser um número maior ou igual a zero';
+  return null;
+}
+
+function validarMovimentacao(dados) {
+  const { produto_id, tipo, quantidade, origem = 'manual' } = dados;
+
+  if (!produto_id) {
+    return 'Produto é obrigatório';
+  }
+  if (tipo !== 'entrada' && tipo !== 'saida') {
+    return 'Tipo deve ser entrada ou saida';
+  }
+  if (!Number.isInteger(Number(quantidade)) || Number(quantidade) <= 0) {
+    return 'Quantidade deve ser um número inteiro maior que zero';
+  }
+  if (origem !== 'manual' && origem !== 'ajuste') {
+    return 'Origem inválida';
   }
   return null;
 }
@@ -75,11 +93,60 @@ app.put('/produtos/:id', (req, res) => {
   res.json({ id: Number(id), nome, categoria, quantidade, minimo, preco });
 });
 
-// Remove um produto pelo id
+// Remove um produto pelo id (bloqueia se ele já tem histórico de movimentações)
 app.delete('/produtos/:id', (req, res) => {
   const { id } = req.params;
+
+  const historico = db.prepare('SELECT COUNT(*) AS total FROM movimentacoes WHERE produto_id = ?').get(id);
+  if (historico.total > 0) {
+    return res.status(400).json({ erro: 'Este produto tem movimentações registradas e não pode ser excluído.' });
+  }
+
   db.prepare('DELETE FROM produtos WHERE id = ?').run(id);
   res.json({ mensagem: 'Produto removido com sucesso' });
+});
+
+// Lista as movimentações (as mais recentes primeiro), com o nome do produto
+app.get('/movimentacoes', (req, res) => {
+  const movimentacoes = db.prepare(`
+    SELECT m.*, p.nome AS produto_nome
+    FROM movimentacoes m
+    JOIN produtos p ON p.id = m.produto_id
+    ORDER BY m.id DESC
+  `).all();
+  res.json(movimentacoes);
+});
+
+// Registra uma entrada ou saída e atualiza o estoque do produto
+app.post('/movimentacoes', (req, res) => {
+  const erro = validarMovimentacao(req.body);
+  if (erro) {
+    return res.status(400).json({ erro });
+  }
+
+  const { produto_id, tipo, observacao = '', origem = 'manual' } = req.body;
+  const quantidade = Number(req.body.quantidade);
+
+  const produto = db.prepare('SELECT * FROM produtos WHERE id = ?').get(produto_id);
+  if (!produto) {
+    return res.status(404).json({ erro: 'Produto não encontrado' });
+  }
+  if (tipo === 'saida' && quantidade > produto.quantidade) {
+    return res.status(400).json({ erro: `Estoque insuficiente. Disponível: ${produto.quantidade}` });
+  }
+
+  const variacao = tipo === 'entrada' ? quantidade : -quantidade;
+
+  // Transação: ou grava o histórico e o estoque juntos, ou não grava nada
+  const registrar = db.transaction(() => {
+    db.prepare(
+      'INSERT INTO movimentacoes (produto_id, tipo, quantidade, origem, observacao) VALUES (?, ?, ?, ?, ?)'
+    ).run(produto_id, tipo, quantidade, origem, observacao);
+    db.prepare('UPDATE produtos SET quantidade = quantidade + ? WHERE id = ?').run(variacao, produto_id);
+  });
+  registrar();
+
+  res.json({ mensagem: 'Movimentação registrada' });
 });
 
 app.listen(PORT, () => {
