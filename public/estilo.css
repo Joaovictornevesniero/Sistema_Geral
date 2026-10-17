@@ -304,6 +304,26 @@ dialog::backdrop {
   border-color: var(--primary);
 }
 
+.menu a {
+  text-decoration: none;
+}
+
+.campo select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.campo select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
 @media (max-width: 720px) {
   .resumo {
     grid-template-columns: 1fr;
@@ -346,8 +366,13 @@ dialog::backdrop {
     padding-bottom: 70px;
   }
 
-  th:nth-child(2), td:nth-child(2),
-  th:nth-child(4), td:nth-child(4) {
+  #tabela-produtos th:nth-child(2), #tabela-produtos td:nth-child(2),
+  #tabela-produtos th:nth-child(4), #tabela-produtos td:nth-child(4) {
+    display: none;
+  }
+
+  #tabela-movimentacoes th:nth-child(5), #tabela-movimentacoes td:nth-child(5),
+  #tabela-movimentacoes th:nth-child(6), #tabela-movimentacoes td:nth-child(6) {
     display: none;
   }
 }

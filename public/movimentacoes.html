@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entradas e saídas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <aside class="menu">
+        <div class="marca"><span class="ponto"></span>Estoque+</div>
+        <nav>
+            <a href="index.html">Produtos</a>
+            <a href="movimentacoes.html" class="ativo">Entradas / saídas</a>
+            <a class="breve">Relatórios</a>
+            <a class="breve">Configurações</a>
+        </nav>
+    </aside>
+
+    <div class="pagina">
+
+        <header class="cabecalho">
+            <div>
+                <h1>Entradas e saídas</h1>
+                <p class="subtitulo">Registre o que entrou e o que saiu do estoque.</p>
+            </div>
+            <button id="btn-novo" class="botao-primario">+ Registrar movimentação</button>
+        </header>
+
+        <main class="conteudo">
+
+            <section class="cartao cartao-tabela">
+                <h2>Histórico</h2>
+                <table id="tabela-movimentacoes">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Produto</th>
+                            <th>Tipo</th>
+                            <th>Qtd</th>
+                            <th>Origem</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Movimentações vão aparecer aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+        </main>
+
+    </div>
+
+    <dialog id="dialogo" class="cartao cartao-formulario">
+        <h2>Registrar movimentação</h2>
+        <form id="form-movimentacao">
+            <div class="campo">
+                <label for="produto_id">Produto</label>
+                <select id="produto_id" required></select>
+            </div>
+            <div class="campo">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" required>
+                    <option value="entrada">Entrada (chegou no estoque)</option>
+                    <option value="saida">Saída (saiu do estoque)</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" id="quantidade" placeholder="0" min="1" required>
+            </div>
+            <div class="campo">
+                <label for="observacao">Observação</label>
+                <input type="text" id="observacao" placeholder="Ex: Compra do fornecedor">
+            </div>
+            <button type="submit" class="botao-primario">Registrar</button>
+            <button type="button" id="btn-cancelar" class="botao-cancelar">Cancelar</button>
+        </form>
+    </dialog>
+
+    <script src="movimentacoes.js"></script>
+</body>
+</html>
