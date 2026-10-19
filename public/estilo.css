@@ -324,6 +324,10 @@ dialog::backdrop {
   border-color: var(--primary);
 }
 
+.cartao-configuracoes {
+  max-width: 520px;
+}
+
 @media (max-width: 720px) {
   .resumo {
     grid-template-columns: 1fr;

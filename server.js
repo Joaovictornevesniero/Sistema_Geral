@@ -149,6 +149,36 @@ app.post('/movimentacoes', (req, res) => {
   res.json({ mensagem: 'Movimentação registrada' });
 });
 
+// Lista as configurações da loja (com valores padrão se ainda não foram salvas)
+app.get('/configuracoes', (req, res) => {
+  const linhas = db.prepare('SELECT chave, valor FROM configuracoes').all();
+  const config = { nome_loja: 'Estoque+', telefone: '', endereco: '' };
+  linhas.forEach((l) => { config[l.chave] = l.valor; });
+  res.json(config);
+});
+
+// Salva as configurações da loja
+app.put('/configuracoes', (req, res) => {
+  const { nome_loja, telefone = '', endereco = '' } = req.body;
+
+  if (!nome_loja || String(nome_loja).trim() === '') {
+    return res.status(400).json({ erro: 'Nome da loja é obrigatório' });
+  }
+
+  // Se a chave já existe, atualiza o valor; se não, cria
+  const salvar = db.prepare(
+    'INSERT INTO configuracoes (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor'
+  );
+  const salvarTudo = db.transaction(() => {
+    salvar.run('nome_loja', String(nome_loja).trim());
+    salvar.run('telefone', String(telefone).trim());
+    salvar.run('endereco', String(endereco).trim());
+  });
+  salvarTudo();
+
+  res.json({ mensagem: 'Configurações salvas' });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

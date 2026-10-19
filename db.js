@@ -29,4 +29,12 @@ db.exec(`
   )
 `);
 
+// Cria - a tabela de configurações da loja (uma linha por configuração)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS configuracoes (
+    chave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL
+  )
+`);
+
 module.exports = db;

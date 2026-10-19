@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <aside class="menu">
+        <div class="marca"><span class="ponto"></span>Estoque+</div>
+        <nav>
+            <a href="index.html">Produtos</a>
+            <a href="movimentacoes.html">Entradas / saídas</a>
+            <a class="breve">Relatórios</a>
+            <a href="configuracoes.html" class="ativo">Configurações</a>
+        </nav>
+    </aside>
+
+    <div class="pagina">
+
+        <header class="cabecalho">
+            <div>
+                <h1>Configurações</h1>
+                <p class="subtitulo">Dados da sua loja. O nome aparece no menu e vai sair nos documentos impressos.</p>
+            </div>
+        </header>
+
+        <main class="conteudo">
+
+            <section class="cartao cartao-configuracoes">
+                <h2>Dados da loja</h2>
+                <form id="form-config">
+                    <div class="campo">
+                        <label for="nome_loja">Nome da loja</label>
+                        <input type="text" id="nome_loja" placeholder="Ex: Oficina do João" required>
+                    </div>
+                    <div class="campo">
+                        <label for="telefone">Telefone</label>
+                        <input type="text" id="telefone" placeholder="Ex: (11) 99999-9999">
+                    </div>
+                    <div class="campo">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" id="endereco" placeholder="Ex: Rua das Flores, 120 - Centro">
+                    </div>
+                    <button type="submit" class="botao-primario">Salvar configurações</button>
+                </form>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="comum.js"></script>
+    <script src="configuracoes.js"></script>
+</body>
+</html>
