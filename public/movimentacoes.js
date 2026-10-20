@@ -8,16 +8,35 @@ function esc(texto) {
 const form = document.querySelector('#form-movimentacao');
 const dialogo = document.querySelector('#dialogo');
 
-// Busca o histórico no banco e desenha a tabela na tela
+// Busca o histórico (respeitando os filtros) e desenha cards e tabela
 async function carregarMovimentacoes() {
-  const resposta = await fetch('/movimentacoes');
+  const params = new URLSearchParams();
+  const de = document.querySelector('#de').value;
+  const ate = document.querySelector('#ate').value;
+  const tipo = document.querySelector('#filtro-tipo').value;
+  if (de) params.set('de', de);
+  if (ate) params.set('ate', ate);
+  if (tipo) params.set('tipo', tipo);
+
+  const resposta = await fetch(`/movimentacoes?${params}`);
+  if (!resposta.ok) {
+    const dados = await resposta.json();
+    alert(dados.erro);
+    return;
+  }
   const movimentacoes = await resposta.json();
+
+  // Totais do que está sendo mostrado
+  const somar = (t) => movimentacoes.filter((m) => m.tipo === t).reduce((soma, m) => soma + m.quantidade, 0);
+  document.querySelector('#total-entradas').textContent = somar('entrada');
+  document.querySelector('#total-saidas').textContent = somar('saida');
+  document.querySelector('#total-movimentacoes').textContent = movimentacoes.length;
 
   const tbody = document.querySelector('#tabela-movimentacoes tbody');
   tbody.innerHTML = '';
 
   if (movimentacoes.length === 0) {
-    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="6">Nenhuma movimentação registrada ainda. Clique em "+ Registrar movimentação" para começar.</td></tr>';
+    tbody.innerHTML = '<tr class="linha-vazia"><td colspan="6">Nenhuma movimentação encontrada.</td></tr>';
     return;
   }
 
@@ -50,6 +69,15 @@ async function carregarProdutosNoSelect() {
 }
 
 carregarMovimentacoes();
+
+document.querySelector('#btn-filtrar').addEventListener('click', carregarMovimentacoes);
+
+document.querySelector('#btn-limpar').addEventListener('click', () => {
+  document.querySelector('#de').value = '';
+  document.querySelector('#ate').value = '';
+  document.querySelector('#filtro-tipo').value = '';
+  carregarMovimentacoes();
+});
 
 document.querySelector('#btn-novo').addEventListener('click', async () => {
   const total = await carregarProdutosNoSelect();

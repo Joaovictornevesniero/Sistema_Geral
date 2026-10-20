@@ -328,6 +328,98 @@ dialog::backdrop {
   max-width: 520px;
 }
 
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.filtros input, .filtros select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.filtros .botao-primario, .filtros .botao-cancelar {
+  width: auto;
+  margin-top: 0;
+  padding: 10px 20px;
+}
+
+.acoes-topo {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.acoes-topo .botao-primario, .acoes-topo .botao-secundario {
+  width: auto;
+  padding: 12px 20px;
+  white-space: nowrap;
+}
+
+.botao-secundario {
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.botao-secundario:hover {
+  background: #E8F3EE;
+}
+
+.linha-item {
+  display: grid;
+  grid-template-columns: 1fr 80px 36px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.linha-item select, .linha-item input {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.btn-remover-item {
+  border: none;
+  border-radius: 8px;
+  background: #FBEAE8;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.total-dialogo {
+  margin: 12px 0;
+  font-weight: 600;
+  text-align: right;
+}
+
 @media (max-width: 720px) {
   .resumo {
     grid-template-columns: 1fr;
@@ -375,7 +467,7 @@ dialog::backdrop {
     display: none;
   }
 
-  #tabela-movimentacoes th:nth-child(5), #tabela-movimentacoes td:nth-child(5),
+  #tabela-movimentacoes th:nth-child(4), #tabela-movimentacoes td:nth-child(4),
   #tabela-movimentacoes th:nth-child(6), #tabela-movimentacoes td:nth-child(6) {
     display: none;
   }

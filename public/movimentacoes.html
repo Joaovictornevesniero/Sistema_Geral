@@ -16,7 +16,6 @@
         <nav>
             <a href="index.html">Produtos</a>
             <a href="movimentacoes.html" class="ativo">Entradas / saídas</a>
-            <a class="breve">Relatórios</a>
             <a href="configuracoes.html">Configurações</a>
         </nav>
     </aside>
@@ -28,21 +27,43 @@
                 <h1>Entradas e saídas</h1>
                 <p class="subtitulo">Registre o que entrou e o que saiu do estoque.</p>
             </div>
-            <button id="btn-novo" class="botao-primario">+ Registrar movimentação</button>
+            <div class="acoes-topo">
+                <button id="btn-entrada" class="botao-secundario">+ Nova entrada</button>
+                <button id="btn-saida" class="botao-primario">+ Nova saída</button>
+            </div>
         </header>
+
+        <section class="resumo">
+            <div class="cartao"><strong id="total-entradas">0</strong><span>Unidades que entraram</span></div>
+            <div class="cartao"><strong id="total-saidas">0</strong><span>Unidades que saíram</span></div>
+            <div class="cartao"><strong id="total-movimentacoes">0</strong><span>Movimentações</span></div>
+        </section>
 
         <main class="conteudo">
 
             <section class="cartao cartao-tabela">
                 <h2>Histórico</h2>
+                <div class="filtros">
+                    <label>De <input type="date" id="de"></label>
+                    <label>Até <input type="date" id="ate"></label>
+                    <label>Tipo
+                        <select id="filtro-tipo">
+                            <option value="">Todos</option>
+                            <option value="entrada">Entradas</option>
+                            <option value="saida">Saídas</option>
+                        </select>
+                    </label>
+                    <button type="button" id="btn-filtrar" class="botao-primario">Filtrar</button>
+                    <button type="button" id="btn-limpar" class="botao-cancelar">Limpar</button>
+                </div>
                 <table id="tabela-movimentacoes">
                     <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Produto</th>
                             <th>Tipo</th>
+                            <th>Itens</th>
                             <th>Qtd</th>
-                            <th>Origem</th>
+                            <th>Valor</th>
                             <th>Observação</th>
                         </tr>
                     </thead>
@@ -57,26 +78,14 @@
     </div>
 
     <dialog id="dialogo" class="cartao cartao-formulario">
-        <h2>Registrar movimentação</h2>
+        <h2 id="titulo-dialogo">Nova entrada</h2>
         <form id="form-movimentacao">
-            <div class="campo">
-                <label for="produto_id">Produto</label>
-                <select id="produto_id" required></select>
-            </div>
-            <div class="campo">
-                <label for="tipo">Tipo</label>
-                <select id="tipo" required>
-                    <option value="entrada">Entrada (chegou no estoque)</option>
-                    <option value="saida">Saída (saiu do estoque)</option>
-                </select>
-            </div>
-            <div class="campo">
-                <label for="quantidade">Quantidade</label>
-                <input type="number" id="quantidade" placeholder="0" min="1" required>
-            </div>
+            <div id="lista-itens"></div>
+            <button type="button" id="btn-add-item" class="botao-cancelar">+ Adicionar item</button>
+            <p id="linha-total" class="total-dialogo">Total: <span id="total-dialogo">R$ 0,00</span></p>
             <div class="campo">
                 <label for="observacao">Observação</label>
-                <input type="text" id="observacao" placeholder="Ex: Compra do fornecedor">
+                <input type="text" id="observacao" placeholder="Ex: Cliente João / Compra do fornecedor">
             </div>
             <button type="submit" class="botao-primario">Registrar</button>
             <button type="button" id="btn-cancelar" class="botao-cancelar">Cancelar</button>

@@ -15,16 +15,26 @@ db.exec(`
   )
 `);
 
-// Cria - a tabela de movimentações (histórico de entradas e saídas)
+// Cria - o cabeçalho da movimentação (uma entrada ou uma venda inteira)
 db.exec(`
   CREATE TABLE IF NOT EXISTS movimentacoes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    produto_id INTEGER NOT NULL,
     tipo TEXT NOT NULL CHECK (tipo IN ('entrada', 'saida')),
-    quantidade INTEGER NOT NULL CHECK (quantidade > 0),
     origem TEXT NOT NULL DEFAULT 'manual',
     observacao TEXT,
-    criado_em TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    criado_em TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  )
+`);
+
+// Cria - os itens de cada movimentação (guarda o preço do momento)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS movimentacao_itens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movimentacao_id INTEGER NOT NULL,
+    produto_id INTEGER NOT NULL,
+    quantidade INTEGER NOT NULL CHECK (quantidade > 0),
+    preco_unitario REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY (movimentacao_id) REFERENCES movimentacoes(id),
     FOREIGN KEY (produto_id) REFERENCES produtos(id)
   )
 `);
