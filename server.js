@@ -220,6 +220,12 @@ app.put('/configuracoes', (req, res) => {
   res.json({ mensagem: 'Configurações salvas' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+// Só liga o servidor quando o arquivo é rodado direto (node server.js).
+// Quando outro arquivo faz require('./server'), ele só recebe o app.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

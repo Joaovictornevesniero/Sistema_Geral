@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 
 // Cria/Abre - o arquivo de banco de dados
-const db = new Database('estoque.db');
+const db = new Database(process.env.DB_PATH || 'estoque.db');
 
 // Cria - a tabela de produtos
 db.exec(`
