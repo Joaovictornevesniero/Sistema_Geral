@@ -117,11 +117,13 @@ form.addEventListener('submit', async (evento) => {
 const tbody = document.querySelector('#tabela-produtos tbody');
 
 // Listener no tbody (não em cada botão) porque as linhas são recriadas
-// toda vez que a tabela é atualizada,  botões individuais perderiam o listener
+// toda vez que a tabela é atualizada, botões individuais perderiam o listener
 tbody.addEventListener('click', async (evento) => {
-  // Exclui o produto da linha clicada
+  // Exclui o produto da linha clicada (só depois de confirmar)
   if (evento.target.classList.contains('btn-excluir')) {
     const id = evento.target.dataset.id;
+    if (!confirm('Tem certeza que quer excluir este produto?')) return;
+
     const resposta = await fetch(`/produtos/${id}`, { method: 'DELETE' });
     if (!resposta.ok) {
       const dados = await resposta.json();
@@ -131,7 +133,7 @@ tbody.addEventListener('click', async (evento) => {
     carregarProdutos();
   }
 
-    // Preenche o formulário com os dados do produto pra edição
+  // Preenche o formulário com os dados do produto pra edição
   if (evento.target.classList.contains('btn-editar')) {
     const id = evento.target.dataset.id;
     const resposta = await fetch(`/produtos/${id}`);

@@ -65,6 +65,9 @@ app.get('/produtos', (req, res) => {
 app.get('/produtos/:id', (req, res) => {
   const { id } = req.params;
   const produto = db.prepare('SELECT * FROM produtos WHERE id = ?').get(id);
+  if (!produto) {
+    return res.status(404).json({ erro: 'Produto não encontrado' });
+  }
   res.json(produto);
 });
 
@@ -94,9 +97,14 @@ app.put('/produtos/:id', (req, res) => {
     return res.status(400).json({ erro });
   }
 
-  db.prepare(
+  const resultado = db.prepare(
     'UPDATE produtos SET nome = ?, categoria = ?, quantidade = ?, minimo = ?, preco = ? WHERE id = ?'
   ).run(nome, categoria, quantidade, minimo, preco, id);
+
+  // changes = quantas linhas o UPDATE alterou. Se foi 0, esse id não existe.
+  if (resultado.changes === 0) {
+    return res.status(404).json({ erro: 'Produto não encontrado' });
+  }
   res.json({ id: Number(id), nome, categoria, quantidade, minimo, preco });
 });
 
