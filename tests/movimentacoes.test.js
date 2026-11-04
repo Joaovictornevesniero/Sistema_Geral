@@ -128,6 +128,15 @@ test('produto que não existe devolve 404', async () => {
   assert.equal(status, 404);
 });
 
+test('não permite movimentar um produto apagado', async () => {
+  const p = await criarProduto({ quantidade: 10 });
+  await mover('entrada', [{ produto_id: p.id, quantidade: 1 }]);
+  await api('DELETE', `/produtos/${p.id}`); // tem histórico, então vira soft delete
+
+  const { status } = await mover('saida', [{ produto_id: p.id, quantidade: 1 }]);
+  assert.equal(status, 404);
+});
+
 // ---------- Histórico ----------
 
 test('histórico devolve itens, total de unidades e valor corretos', async () => {

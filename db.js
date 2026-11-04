@@ -11,7 +11,8 @@ db.exec(`
     categoria TEXT NOT NULL DEFAULT 'Geral',
     quantidade INTEGER NOT NULL DEFAULT 0,
     minimo INTEGER NOT NULL DEFAULT 0,
-    preco REAL NOT NULL DEFAULT 0
+    preco REAL NOT NULL DEFAULT 0,
+    ativo INTEGER NOT NULL DEFAULT 1
   )
 `);
 

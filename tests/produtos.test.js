@@ -43,6 +43,8 @@ test('PUT atualiza os campos do produto', async () => {
   assert.equal(produto.preco, 7.5);
 });
 
+// ---------- Exclusão ----------
+
 test('DELETE remove um produto sem histórico', async () => {
   const criado = await criarProduto();
 
@@ -53,19 +55,42 @@ test('DELETE remove um produto sem histórico', async () => {
   assert.equal(lista.dados.length, 0);
 });
 
-test('DELETE bloqueia produto que já tem movimentações', async () => {
-  const criado = await criarProduto();
+test('DELETE de produto com movimentações some da lista, mas o histórico fica', async () => {
+  const criado = await criarProduto({ nome: 'Parafuso' });
   await api('POST', '/movimentacoes', {
     tipo: 'entrada', itens: [{ produto_id: criado.id, quantidade: 1 }]
   });
 
-  const { status, dados } = await api('DELETE', `/produtos/${criado.id}`);
-  assert.equal(status, 400);
-  assert.ok(dados.erro);
+  const { status } = await api('DELETE', `/produtos/${criado.id}`);
+  assert.equal(status, 200);
 
-  // o produto continua existindo
   const lista = await api('GET', '/produtos');
-  assert.equal(lista.dados.length, 1);
+  assert.equal(lista.dados.length, 0);
+
+  const busca = await api('GET', `/produtos/${criado.id}`);
+  assert.equal(busca.status, 404);
+
+  const historico = await api('GET', '/movimentacoes');
+  assert.equal(historico.dados.length, 1);
+  assert.match(historico.dados[0].itens, /Parafuso x1/);
+});
+
+test('DELETE de produto inexistente devolve 404', async () => {
+  const { status } = await api('DELETE', '/produtos/9999');
+  assert.equal(status, 404);
+});
+
+test('PUT de produto apagado devolve 404', async () => {
+  const criado = await criarProduto();
+  await api('POST', '/movimentacoes', {
+    tipo: 'entrada', itens: [{ produto_id: criado.id, quantidade: 1 }]
+  });
+  await api('DELETE', `/produtos/${criado.id}`);
+
+  const { status } = await api('PUT', `/produtos/${criado.id}`, {
+    nome: 'X', quantidade: 1, minimo: 0, preco: 1
+  });
+  assert.equal(status, 404);
 });
 
 // ---------- Validação (cada linha vira um teste) ----------
@@ -73,8 +98,10 @@ test('DELETE bloqueia produto que já tem movimentações', async () => {
 const invalidos = [
   ['nome vazio', { nome: '' }],
   ['nome só com espaços', { nome: '   ' }],
+  ['nome que não é texto', { nome: { a: 1 } }],
   ['quantidade negativa', { quantidade: -1 }],
   ['quantidade com texto', { quantidade: 'abc' }],
+  ['quantidade vazia', { quantidade: '' }],
   ['mínimo negativo', { minimo: -1 }],
   ['preço negativo', { preco: -1 }],
   ['preço com texto', { preco: 'abc' }]
@@ -104,13 +131,4 @@ test('PUT de produto inexistente devolve 404', async () => {
     nome: 'X', quantidade: 1, minimo: 0, preco: 1
   });
   assert.equal(status, 404);
-});
-
-// ---------- Problema conhecido (hoje falha; é o passo 4.4) ----------
-// "todo" = o teste roda, mas a falha NÃO derruba a suíte.
-// Quando você consertar o código, apague o { todo: ... } e ele vira um teste normal.
-
-test('POST recusa quantidade vazia ("")', { todo: 'passo 4.4' }, async () => {
-  const { status } = await api('POST', '/produtos', { nome: 'Item', quantidade: '', preco: 1 });
-  assert.equal(status, 400);
 });

@@ -1,5 +1,5 @@
 const express = require('express');
-const db= require('./db');
+const db = require('./db');
 const app = express();
 
 app.use(express.json());
@@ -14,19 +14,27 @@ app.use(express.static('public'));
 
 const PORT = 3000;
 
+// Aceita só número de verdade: recusa "", "  ", null, undefined e texto como "abc".
+// Decimais (2.5) são aceitos aqui, mas a tela só deixa digitar inteiros.
+function numeroValido(valor) {
+  if (valor === '' || valor === null || valor === undefined) return false;
+  if (typeof valor === 'string' && valor.trim() === '') return false;
+  return Number.isFinite(Number(valor));
+}
+
 function validarProduto(dados) {
   const { nome, quantidade, minimo = 0, preco } = dados;
 
-  if (!nome || nome.trim() === '') {
+  if (typeof nome !== 'string' || nome.trim() === '') {
     return 'Nome é obrigatório';
   }
-  if (isNaN(quantidade) || Number(quantidade) < 0) {
+  if (!numeroValido(quantidade) || Number(quantidade) < 0) {
     return 'Quantidade deve ser um número maior ou igual a zero';
   }
-  if (isNaN(minimo) || Number(minimo) < 0) {
+  if (!numeroValido(minimo) || Number(minimo) < 0) {
     return 'Estoque mínimo deve ser um número maior ou igual a zero';
   }
-  if (isNaN(preco) || Number(preco) < 0) {
+  if (!numeroValido(preco) || Number(preco) < 0) {
     return 'Preço deve ser um número maior ou igual a zero';
   }
   return null;
@@ -55,16 +63,16 @@ app.get('/', (req, res) => {
   res.send('Servidor funcionando!');
 });
 
-// Lista todos os produtos cadastrados
+// Lista os produtos ativos (os apagados com soft delete não aparecem)
 app.get('/produtos', (req, res) => {
-  const produtos = db.prepare('SELECT * FROM produtos').all();
+  const produtos = db.prepare('SELECT * FROM produtos WHERE ativo = 1').all();
   res.json(produtos);
 });
 
-// Busca um produto específico pelo id
+// Busca um produto ativo pelo id
 app.get('/produtos/:id', (req, res) => {
   const { id } = req.params;
-  const produto = db.prepare('SELECT * FROM produtos WHERE id = ?').get(id);
+  const produto = db.prepare('SELECT * FROM produtos WHERE id = ? AND ativo = 1').get(id);
   if (!produto) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
@@ -86,7 +94,7 @@ app.post('/produtos', (req, res) => {
   res.json({ id: resultado.lastInsertRowid, nome, categoria, quantidade, minimo, preco });
 });
 
-// Atualiza um produto existente pelo id
+// Atualiza um produto ativo pelo id
 app.put('/produtos/:id', (req, res) => {
   const { id } = req.params;
   const { nome, quantidade, minimo = 0, preco } = req.body;
@@ -98,30 +106,37 @@ app.put('/produtos/:id', (req, res) => {
   }
 
   const resultado = db.prepare(
-    'UPDATE produtos SET nome = ?, categoria = ?, quantidade = ?, minimo = ?, preco = ? WHERE id = ?'
+    'UPDATE produtos SET nome = ?, categoria = ?, quantidade = ?, minimo = ?, preco = ? WHERE id = ? AND ativo = 1'
   ).run(nome, categoria, quantidade, minimo, preco, id);
 
-  // changes = quantas linhas o UPDATE alterou. Se foi 0, esse id não existe.
+  // changes = quantas linhas o UPDATE alterou. Se foi 0, esse id não existe (ou foi apagado).
   if (resultado.changes === 0) {
     return res.status(404).json({ erro: 'Produto não encontrado' });
   }
   res.json({ id: Number(id), nome, categoria, quantidade, minimo, preco });
 });
 
-// Remove um produto pelo id (bloqueia se ele já tem histórico de movimentações)
+// Remove um produto. Se ele já tem histórico, só esconde (soft delete); se não, apaga de verdade.
 app.delete('/produtos/:id', (req, res) => {
   const { id } = req.params;
 
+  const produto = db.prepare('SELECT id FROM produtos WHERE id = ? AND ativo = 1').get(id);
+  if (!produto) {
+    return res.status(404).json({ erro: 'Produto não encontrado' });
+  }
+
   const historico = db.prepare('SELECT COUNT(*) AS total FROM movimentacao_itens WHERE produto_id = ?').get(id);
   if (historico.total > 0) {
-    return res.status(400).json({ erro: 'Este produto tem movimentações registradas e não pode ser excluído.' });
+    db.prepare('UPDATE produtos SET ativo = 0 WHERE id = ?').run(id);
+    return res.json({ mensagem: 'Produto removido da lista. O histórico foi mantido.' });
   }
 
   db.prepare('DELETE FROM produtos WHERE id = ?').run(id);
   res.json({ mensagem: 'Produto removido com sucesso' });
 });
 
-// Lista as movimentações (mais recentes primeiro), com filtros opcionais de período e tipo
+// Lista as movimentações (mais recentes primeiro), com filtros opcionais de período e tipo.
+// Não filtra por "ativo" de propósito: produto apagado continua com o nome no histórico.
 app.get('/movimentacoes', (req, res) => {
   const { de = '0000-01-01', ate = '9999-12-31', tipo = '' } = req.query;
 
@@ -164,7 +179,7 @@ app.post('/movimentacoes', (req, res) => {
     totais[i.produto_id] = (totais[i.produto_id] || 0) + Number(i.quantidade);
   });
 
-  const buscar = db.prepare('SELECT * FROM produtos WHERE id = ?');
+  const buscar = db.prepare('SELECT * FROM produtos WHERE id = ? AND ativo = 1');
   const itens = [];
   for (const [produto_id, quantidade] of Object.entries(totais)) {
     const produto = buscar.get(produto_id);
@@ -226,6 +241,13 @@ app.put('/configuracoes', (req, res) => {
   salvarTudo();
 
   res.json({ mensagem: 'Configurações salvas' });
+});
+
+// Pega qualquer erro não tratado e responde em JSON, em vez de uma página HTML.
+// Precisa ficar depois de todas as rotas e ter 4 parâmetros.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ erro: 'Erro interno do servidor' });
 });
 
 // Só liga o servidor quando o arquivo é rodado direto (node server.js).
